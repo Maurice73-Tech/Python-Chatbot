@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-from transformers import GPT2TokenizerFast
+#from transformers import GPT2TokenizerFast
+from transformers import LlamaTokenizerFast
 from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
@@ -46,7 +47,9 @@ with open('DBE_FactSheet_merged.txt', 'r') as f:
     text = f.read()
 
 # Load the GPT-2 tokenizer
-tokenizer = GPT2TokenizerFast.from_pretrained("gpt2")
+#tokenizer = GPT2TokenizerFast.from_pretrained("gpt2")
+
+tokenizer = LlamaTokenizerFast.from_pretrained("hf-internal-testing/llama-tokenizer")
 
 # Function to count the number of tokens in a text using the GPT-2 tokenizer
 def count_tokens(text: str) -> int:
