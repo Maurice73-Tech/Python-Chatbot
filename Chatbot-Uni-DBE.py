@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
+import PyPDF2
+import glob
 from transformers import GPT2TokenizerFast
 from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -26,20 +28,32 @@ configure()
 # Set up the OpenAI API key as an Environment Variable
 os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY')
 
-# Load and split the PDF document into pages
-loader = PyPDFLoader("DBE_FactSheet_merged.pdf")
-pages = loader.load_and_split()
+directory = os.getcwd() + '/'
 
-# Initialize chunks with the loaded pages
-chunks = pages
+# Find all PDF files in the directory
+pdf_files = glob.glob(directory + "*.pdf")
 
-# Library by HuggingFace for NLP to extract text from PDF file 
-import textract
-doc = textract.process("DBE_FactSheet_merged.pdf")
+all_text = []
+
+# Iterate through each PDF file
+for pdf_file in pdf_files:
+    # Open the PDF file in binary read mode
+    with open(pdf_file, 'rb') as file:
+        # Create a PDF reader object
+        reader = PyPDF2.PdfReader(file)
+
+        # Extract text from each page of the PDF
+        for page in reader.pages:
+            text = page.extract_text()
+            if text:  # Check if the page contains text
+                all_text.append(text)
+
+# Combine all extracted text into one string
+combined_text = '\n'.join(all_text)
 
 # Write the extracted text to a file
-with open('DBE_FactSheet_merged.txt', 'w') as f:
-    f.write(doc.decode('utf-8'))
+with open('DBE_FactSheet_merged.txt', 'w', encoding='utf-8') as f:
+    f.write(combined_text)
 
 # Read the text from the file
 with open('DBE_FactSheet_merged.txt', 'r') as f:
@@ -68,7 +82,7 @@ db = FAISS.from_documents(chunks, embeddings)
 
 # Load the QA retrieval system with specific settings
 chain = load_qa_chain(OpenAI(temperature=0), chain_type="stuff")
-qa = ConversationalRetrievalChain.from_llm(OpenAI(temperature=0.1), db.as_retriever())
+qa = ConversationalRetrievalChain.from_llm(OpenAI(temperature=0.3), db.as_retriever())
 
 # Initialize the chat history
 chat_history = []
@@ -88,16 +102,22 @@ query = st.text_input("Please enter your question:")
 # submit button
 submit = st.button('Submit')
 
+# Function to display the conversation history
+def display_conversation_history():
+    for user_query, bot_response in chat_history:
+        st.write(f"**User:** {user_query}")
+        st.write(f"**ChatDBE_GPT:** {bot_response}")
+
 # Handle the user's question
-if query:
+if query:  # Using 'submit' button to trigger response
     # End the chatbot session if user types 'exit'
     if query.lower() == 'exit':
         st.write("Thank you for using the DBE Information Chatbot")
+        chat_history.clear()  # Optionally clear the history upon exiting
     else:
         # Retrieve the answer for the user's question
         result = qa({"question": query, "chat_history": chat_history})
         chat_history.append((query, result['answer']))
 
-        # Display the conversation on the web page
-        st.write(f"**User:** {query}")
-        st.write(f"**Chatbot:** {result['answer']}")
+        # Display the entire conversation history
+        display_conversation_history()
