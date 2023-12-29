@@ -85,7 +85,9 @@ chain = load_qa_chain(OpenAI(temperature=0), chain_type="stuff")
 qa = ConversationalRetrievalChain.from_llm(OpenAI(temperature=0.3), db.as_retriever())
 
 # Initialize the chat history
-chat_history = []
+# Überprüfen Sie, ob chat_history bereits im Session-Status existiert
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []  # Initialisieren Sie es als leere Liste, wenn es noch nicht existiert
 
 # Streamlit favicon
 st.set_page_config(page_title="DBE Information Chatbot", page_icon=":robot_face:", layout="wide")
@@ -104,20 +106,28 @@ submit = st.button('Submit')
 
 # Function to display the conversation history
 def display_conversation_history():
-    for user_query, bot_response in chat_history:
-        st.write(f"**User:** {user_query}")
-        st.write(f"**ChatDBE_GPT:** {bot_response}")
+    for user_query, bot_response in st.session_state.chat_history:
+        st.markdown(f"""
+            <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;">
+                <span style="margin-left: 10px;"><strong>User:</strong> {user_query}</span>
+            </div>
+            """, unsafe_allow_html=True)
+        st.markdown(f"""
+            <div style="background-color: #ffffff; padding: 10px; border-radius: 5px;">
+                <span style="margin-left: 10px;"><strong>ChatDBE_GPT:</strong> {bot_response}</span>
+            </div>
+            """, unsafe_allow_html=True)
 
 # Handle the user's question
 if query:  # Using 'submit' button to trigger response
     # End the chatbot session if user types 'exit'
     if query.lower() == 'exit':
         st.write("Thank you for using the DBE Information Chatbot")
-        chat_history.clear()  # Optionally clear the history upon exiting
+        st.session_state.chat_history.clear()  # Optionally clear the history upon exiting
     else:
         # Retrieve the answer for the user's question
-        result = qa({"question": query, "chat_history": chat_history})
-        chat_history.append((query, result['answer']))
+        result = qa({"question": query, "chat_history": st.session_state.chat_history})
+        st.session_state.chat_history.append((query, result['answer']))
 
         # Display the entire conversation history
         display_conversation_history()
