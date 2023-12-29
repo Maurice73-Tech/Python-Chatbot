@@ -85,9 +85,8 @@ chain = load_qa_chain(OpenAI(temperature=0), chain_type="stuff")
 qa = ConversationalRetrievalChain.from_llm(OpenAI(temperature=0.3), db.as_retriever())
 
 # Initialize the chat history
-# Überprüfen Sie, ob chat_history bereits im Session-Status existiert
 if 'chat_history' not in st.session_state:
-    st.session_state.chat_history = []  # Initialisieren Sie es als leere Liste, wenn es noch nicht existiert
+    st.session_state.chat_history = [] 
 
 # Streamlit favicon
 st.set_page_config(page_title="DBE Information Chatbot", page_icon=":robot_face:", layout="wide")
@@ -109,12 +108,12 @@ def display_conversation_history():
     for user_query, bot_response in st.session_state.chat_history:
         st.markdown(f"""
             <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;">
-                <span style="margin-left: 10px;"><strong>User:</strong> {user_query}</span>
+                <span style="margin-left: 0px;"><strong>User:</strong> {user_query}</span>
             </div>
             """, unsafe_allow_html=True)
         st.markdown(f"""
             <div style="background-color: #ffffff; padding: 10px; border-radius: 5px;">
-                <span style="margin-left: 10px;"><strong>ChatDBE_GPT:</strong> {bot_response}</span>
+                <span style="margin-left: 0px;"><strong>ChatDBE_GPT:</strong> {bot_response}</span>
             </div>
             """, unsafe_allow_html=True)
 
