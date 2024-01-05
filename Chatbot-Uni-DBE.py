@@ -98,10 +98,7 @@ st.image("DBE-Logo.png")
 st.title('Digital Business Engineering - Information Chatbot')
 
 # User input
-query = st.text_input("Please enter your question:")
-
-# submit button
-submit = st.button('Submit')
+query = st.chat_input("Please enter your question:")
 
 # Function to display the conversation history
 def display_conversation_history():
@@ -118,7 +115,7 @@ def display_conversation_history():
             """, unsafe_allow_html=True)
 
 # Handle the user's question
-if query:  # Using 'submit' button to trigger response
+if query:
     # End the chatbot session if user types 'exit'
     if query.lower() == 'exit':
         st.write("Thank you for using the DBE Information Chatbot")
