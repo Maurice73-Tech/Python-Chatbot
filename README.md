@@ -36,14 +36,6 @@ Welcome to the GitHub repository of the Digital Business Engineering (DBE) Infor
 
 - Ensure you have an OpenAI API key and set it as an environment variable in a `.env` file.
 
-## Contributions
-
-Contributions are welcome! Please read the `CONTRIBUTING.md` file for guidelines on how to contribute to this project.
-
-## License
-
-This project is licensed under the MIT License - see the `LICENSE.md` file for details.
-
 ---
 
 *Disclaimer: This chatbot is designed for informational purposes related to the DBE study program. For official information, always refer to the official university resources.*
