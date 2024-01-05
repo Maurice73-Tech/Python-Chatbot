@@ -9,13 +9,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import PyPDF2
 import glob
-from transformers import GPT2TokenizerFast
+from transformers import OpenAIGPTTokenizerFast
 from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
-from langchain.llms import OpenAI
+from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationalRetrievalChain
 
 # Function to configure the environment
@@ -60,7 +60,7 @@ with open('DBE_FactSheet_merged.txt', 'r') as f:
     text = f.read()
 
 # Load the GPT-2 tokenizer
-tokenizer = GPT2TokenizerFast.from_pretrained("gpt2")
+tokenizer = OpenAIGPTTokenizerFast.from_pretrained("gpt2")
 
 # Function to count the number of tokens in a text using the GPT-2 tokenizer
 def count_tokens(text: str) -> int:
@@ -81,8 +81,8 @@ embeddings = OpenAIEmbeddings()
 db = FAISS.from_documents(chunks, embeddings)
 
 # Load the QA retrieval system with specific settings
-chain = load_qa_chain(OpenAI(temperature=0), chain_type="stuff")
-qa = ConversationalRetrievalChain.from_llm(OpenAI(temperature=0.3), db.as_retriever())
+chain = load_qa_chain(ChatOpenAI(model_name="gpt-4-1106-preview", temperature=0), chain_type="stuff")
+qa = ConversationalRetrievalChain.from_llm(ChatOpenAI(model_name="gpt-4-1106-preview", temperature=0.3), db.as_retriever())
 
 # Initialize the chat history
 if 'chat_history' not in st.session_state:
