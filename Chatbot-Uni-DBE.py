@@ -77,7 +77,7 @@ text_splitter = RecursiveCharacterTextSplitter(
 chunks = text_splitter.create_documents([text])
 
 # Generate the embeddings for the chunks
-embeddings = OpenAIEmbeddings()
+embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
 db = FAISS.from_documents(chunks, embeddings)
 
 # Load the QA retrieval system with specific settings
