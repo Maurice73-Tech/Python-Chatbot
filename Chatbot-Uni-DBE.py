@@ -81,8 +81,8 @@ embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
 db = FAISS.from_documents(chunks, embeddings)
 
 # Load the QA retrieval system with specific settings
-chain = load_qa_chain(ChatOpenAI(model_name="gpt-4-1106-preview", temperature=0), chain_type="stuff")
-qa = ConversationalRetrievalChain.from_llm(ChatOpenAI(model_name="gpt-4-1106-preview", temperature=0.3), db.as_retriever())
+chain = load_qa_chain(ChatOpenAI(model_name="gpt-4-1106-preview", temperature=0.1), chain_type="stuff")
+qa = ConversationalRetrievalChain.from_llm(ChatOpenAI(model_name="gpt-4-1106-preview", temperature=0.1), db.as_retriever())
 
 # Initialize the chat history
 if 'chat_history' not in st.session_state:
@@ -98,7 +98,7 @@ st.image("DBE-Logo.png")
 st.title('Digital Business Engineering - Information Chatbot')
 
 # User input
-query = st.chat_input("Please enter your question:")
+query = st.chat_input("Please enter your question...")
 
 # Function to display the conversation history
 def display_conversation_history():
